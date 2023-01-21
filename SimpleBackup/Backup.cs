@@ -26,6 +26,7 @@ namespace SimpleBackup
             string destination = @"C:\Users\Matt\Desktop\Backup\";
             //string destination = @"F:\SimpleBackupTesting\";  // works
             // First Push try for testing
+            // Second try to see if goes through.
 
             string[] extensions = new string[] { "*.gif", "*.xls", "*.xlsx", "*.txt", "*.pdf", "*.docx", "*.csv" };
 
