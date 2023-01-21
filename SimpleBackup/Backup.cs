@@ -25,6 +25,7 @@ namespace SimpleBackup
             string sourceDir = @"C:\Users\Matt\Desktop\NeedsBackedUp\";
             string destination = @"C:\Users\Matt\Desktop\Backup\";
             //string destination = @"F:\SimpleBackupTesting\";  // works
+            // Testing1 from main PC
 
             string[] extensions = new string[] { "*.gif", "*.xls", "*.xlsx", "*.txt", "*.pdf", "*.docx", "*.csv" };
 
