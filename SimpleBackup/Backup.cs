@@ -14,18 +14,18 @@ namespace SimpleBackup
 
         public Backup()
         {
-            _timer = new System.Timers.Timer(20000) {AutoReset = true};  // 5 seconds
+            //_timer = new System.Timers.Timer(20000) {AutoReset = true};  // For every 5 seconds
+
+            // For every 24 hours
+            _timer = new System.Timers.Timer(TimeSpan.FromHours(24).TotalMilliseconds) { AutoReset = true };
 
             _timer.Elapsed += timerElapsed;
         }
 
         private void timerElapsed(object sender, ElapsedEventArgs e)
-        {
-            // Do the work
-            string sourceDir = @"C:\Users\Matt\Desktop\NeedsBackedUp\";
-            string destination = @"C:\Users\Matt\Desktop\Backup\";
-            //string destination = @"F:\SimpleBackupTesting\";  // works
-            // Last test
+        {      
+            string sourceDir = @"C:\Users\Matt\OneDrive\Desktop\NeedsBackedUp\";
+            string destination = @"D:\SimpleBackup\";
 
             string[] extensions = new string[] { "*.gif", "*.xls", "*.xlsx", "*.txt", "*.pdf", "*.docx", "*.csv" };
 
