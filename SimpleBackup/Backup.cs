@@ -17,8 +17,8 @@ namespace SimpleBackup
 
         public Backup()
         {
-             _timer = new System.Timers.Timer(60000 * 1440) {AutoReset = true};  //60000 = 1 minute  1400 = 1440/60 = 24 
-                                                                                 // so, 1440 minutes / 60 = 24hours
+             _timer = new System.Timers.Timer(60000 * 720) {AutoReset = true};  // Every 12 hours.
+
             _timer.Elapsed += timerElapsed;
         }
 
