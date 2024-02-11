@@ -29,28 +29,38 @@ namespace SimpleBackup
         {
             GetConnection getConnection = new GetConnection();
 
-            Tuple<string, string> con = getConnection.getConn();
-            string sourceDir = con.Item1;
-            string destination = con.Item2;
-           
-            string[] extensions = new string[] { ".gif", ".xls", ".xlsx", ".txt", ".pdf", ".doc", ".docx", ".csv", ".ppt", ".pptx" };
+            List<(string, string)> backup = getConnection.getConn();
 
-            string[] allFiles = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
-
-            foreach (string textFile in allFiles)
+            foreach (var backupItem in backup)
             {
-                if (extensions.Any(textFile.Contains))
+                string sourceDir = backupItem.Item1;
+                string destination = backupItem.Item2;
+
+                string[] allFiles = Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories);
+
+                List<string> filesWithExtensions = new List<string>();
+
+                foreach (var item in allFiles)
                 {
-                    string fileName = textFile.Substring(sourceDir.Length);
+                    string extension = Path.GetExtension(item);
+                    if (!String.IsNullOrEmpty(extension))
+                    {
+                        filesWithExtensions.Add(item);
+                    }
+                }
+
+                foreach (string file in filesWithExtensions)
+                {
+                    string fileName = file.Substring(sourceDir.Length);
                     string directoryPath = Path.Combine(destination, Path.GetDirectoryName(fileName));
 
                     if (!Directory.Exists(directoryPath))
                         Directory.CreateDirectory(directoryPath);
 
-                    File.Copy(textFile, Path.Combine(directoryPath, Path.GetFileName(textFile)), true);
-                    getConnection.InsertIntoBackupLog(textFile, directoryPath);
-                }                              
-            }         
+                    File.Copy(file, Path.Combine(directoryPath, Path.GetFileName(file)), true);
+                    getConnection.InsertIntoBackupLog(file, directoryPath);
+                }          
+            }
         }
 
         public void Start()
@@ -73,22 +83,25 @@ namespace SimpleBackup
         {
             _connectionString = ConfigurationManager.ConnectionStrings["BackupConn"].ConnectionString;
         }
-        public  Tuple<string, string> getConn()
+        public List<(string, string)> getConn()
         {
-
             using (SqlConnection con = new SqlConnection(_connectionString))
             {
-
                 string query = "select * from dbo.Simplebackup";
                 con.Open();
                 SqlCommand cmd = new SqlCommand(query, con);
                 DataTable dt = new DataTable();
                 dt.Load(cmd.ExecuteReader());
+                List<(string, string)> SourceAndDestination = new List<(string, string)>();
 
-                string source = dt.Rows[0]["SourceDir"].ToString();
-                string destination = dt.Rows[0]["Destination"].ToString();
-
-                return Tuple.Create(source, destination);
+                foreach (DataRow row in dt.Rows)
+                {
+                    string source = row["SourceDir"].ToString();
+                    string destination = row["Destination"].ToString();
+                    var pair = Tuple.Create(source, destination);
+                    SourceAndDestination.Add(pair.ToValueTuple());
+                }
+                return SourceAndDestination;
             }
         }
 
